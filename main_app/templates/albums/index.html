@@ -5,13 +5,15 @@
 
 {% for album in albums %}
 <div class="card">
-    <div class="card-content">
-        <span class="card-title">{{ album.name }}</span>
-        <p>Title: {{ album.title }}</p>
-        <p>Artist: {{ album.artist }}</p>
-        <p>Genre: {{ album.genre }}</p>
-        <p>Hit Song: {{ album.hit_song }}</p>
-    </div>
+    <a href="{% url 'detail' album.id %}">
+        <div class="card-content">
+            <span class="card-title">{{ album.name }}</span>
+            <p>Title: {{ album.title }}</p>
+            <p>Artist: {{ album.artist }}</p>
+            <p>Genre: {{ album.genre }}</p>
+            <p>Hit Song: {{ album.hit_song }}</p>
+        </div>
+    </a>
 </div>
 {% endfor %}
 

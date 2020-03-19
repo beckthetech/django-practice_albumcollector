@@ -1,25 +1,8 @@
 from django.shortcuts import render
-from django.http import HttpResponse
+from .models import Album
 
-
-class Album:  # Note that parens are optional if not inheriting from another class
-    def __init__(self, title, artist, genre, hit_song):
-        self.title = title
-        self.artist = artist
-        self.genre = genre
-        self.hit_song = hit_song
-
-
-albums = [
-    Album('An Innocent Man', 'Billy Joel',
-          'doo-wop, soft-rock, soul', 'Uptown Girl'),
-    Album('Songs in the Key of Life', 'Stevie Wonder',
-          'soul, funk, R&B, jazz fusion', 'Sir Duke'),
-    Album('Unplugged', 'Eric Clapton', 'blues, acoustic rock', 'Layla')
-]
 
 # Create your views here.
-
 
 def home(request):
     return HttpResponse('<h1>Hello World</h1>')
@@ -30,4 +13,10 @@ def about(request):
 
 
 def albums_index(request):
+    albums = Album.objects.all()
     return render(request, 'albums/index.html', {'albums': albums})
+
+
+def albums_detail(request, album_id):
+    album = Album.objects.get(id=album_id)
+    return render(request, 'albums/detail.html', {'album': album})
