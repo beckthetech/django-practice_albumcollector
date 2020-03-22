@@ -11,11 +11,21 @@ RELEASES = (
     ('C', 'cover'),
 )
 
+
+class Genre(models.Model):
+    name = models.CharField(max_length=50)
+
+    def __str__(self):
+        return self.name
+
+    def get_absolute_url(self):
+        return reverse('genres_detail', kwargs={'pk': self.id})
+
+
 class Album(models.Model):
     title = models.CharField(max_length=100)
     artist = models.CharField(max_length=100)
-    genre = models.CharField(max_length=100)
-    hit_song = models.CharField(max_length=100)
+    genres = models.ManyToManyField(Genre)
 
     def __str__(self):
         return self.title

@@ -10,8 +10,6 @@
                 <span class="card-title">{{ album.title }}</span>
                 <p>Title: {{ album.title }}</p>
                 <p>Artist: {{ album.artist }}</p>
-                <p>Genre: {{ album.genre }}</p>
-                <p>Hit Song: {{ album.hit_song }}</p>
             </div>
             <div class="card-action">
                 <a href="{% url 'albums_update' album.id %}">Edit</a>
@@ -47,9 +45,47 @@
         </table>
     </div>
 </div>
-
-<script>
-    const selectEl = document.getElementById('id_release');
-    M.FormSelect.init(selectEl);
-</script>
-{% endblock %}
+<div class="row">
+    <div class="col s6">
+        <h3>Genres</h3>
+        {% if album.genres.count %}
+        {% for genre in album.genres.all %}
+        <div class="card">
+            <div class="card-content">
+                <span class="card-title">
+                    {{ genre.name }}
+                </span>
+            </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <h5>None Listed</h5>
+        {% endif %}
+    </div>
+    <div class="col s6">
+        <h3>Unlisted Genres</h3>
+        {% if genres.count %}
+        {% for genre in genres.all %}
+        <div class="card">
+            <div class="card-content">
+                <span class="card-title">
+                    {{ genre.name }}
+                </span>
+            </div>
+            <div class="card-action">
+                <form action="{% url 'assoc_genre' album.id genre.id %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn">Add</button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <h5>{{album.title}} Already Has All Genres Available</h5>
+        {% endif %}
+    </div>
+    <script>
+        const selectEl = document.getElementById('id_release');
+        M.FormSelect.init(selectEl);
+    </script>
+    {% endblock %}

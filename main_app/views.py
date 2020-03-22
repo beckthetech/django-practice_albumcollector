@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from .models import Album
+from .models import Album, Genre
 from .forms import AddTrackForm
 
 # CBVs
@@ -9,12 +9,12 @@ from .forms import AddTrackForm
 
 class AlbumCreate(CreateView):
     model = Album
-    fields = ['title', 'artist', 'genre', 'hit_song']
+    fields = ['title', 'artist']
 
 
 class AlbumUpdate(UpdateView):
     model = Album
-    fields = ['artist', 'genre', 'hit_song']
+    fields = ['artist']
 
 
 class AlbumDelete(DeleteView):
@@ -44,10 +44,13 @@ def albums_detail(request, album_id):
         tracks = album.track_set.all().order_by('track_num')
     else:
         tracks = []
+    genres_not_listed = Genre.objects.exclude(
+        id__in=album.genres.all().values_list('id'))
     add_track_form = AddTrackForm()
     return render(request, 'albums/detail.html', {
         'album': album,
         'tracks': tracks,
+        'genres': genres_not_listed,
         'add_track_form': add_track_form
     })
 
@@ -58,4 +61,9 @@ def add_track(request, album_id):
         new_track = form.save(commit=False)
         new_track.album_id = album_id
         new_track.save()
+    return redirect('detail', album_id=album_id)
+
+
+def assoc_genre(request, album_id, genre_id):
+    Album.objects.get(id=album_id).genres.add(genre_id)
     return redirect('detail', album_id=album_id)
