@@ -1,8 +1,29 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.http import HttpResponse
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from .models import Album
+from .forms import AddTrackForm
+
+# CBVs
+
+
+class AlbumCreate(CreateView):
+    model = Album
+    fields = ['title', 'artist', 'genre', 'hit_song']
+
+
+class AlbumUpdate(UpdateView):
+    model = Album
+    fields = ['artist', 'genre', 'hit_song']
+
+
+class AlbumDelete(DeleteView):
+    model = Album
+    success_url = '/albums/'
 
 
 # Create your views here.
+
 
 def home(request):
     return HttpResponse('<h1>Hello World</h1>')
@@ -19,4 +40,22 @@ def albums_index(request):
 
 def albums_detail(request, album_id):
     album = Album.objects.get(id=album_id)
-    return render(request, 'albums/detail.html', {'album': album})
+    if album.track_set != None:
+        tracks = album.track_set.all().order_by('track_num')
+    else:
+        tracks = []
+    add_track_form = AddTrackForm()
+    return render(request, 'albums/detail.html', {
+        'album': album,
+        'tracks': tracks,
+        'add_track_form': add_track_form
+    })
+
+
+def add_track(request, album_id):
+    form = AddTrackForm(request.POST)
+    if form.is_valid():
+        new_track = form.save(commit=False)
+        new_track.album_id = album_id
+        new_track.save()
+    return redirect('detail', album_id=album_id)
